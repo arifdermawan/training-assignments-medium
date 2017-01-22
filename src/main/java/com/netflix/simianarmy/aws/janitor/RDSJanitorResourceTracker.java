@@ -119,47 +119,35 @@ public class RDSJanitorResourceTracker implements JanitorResourceTracker {
     		StringBuilder sb = AppnedInsertStatement();
 
             LOGGER.debug(String.format("Insert statement is '%s'", sb));
-    		int updated = this.jdbcTemplate.update(sb.toString(),
-    								 resource.getId(),
-    								 value(resource.getResourceType().toString()),
-    								 value(resource.getRegion()),
-    								 emailValue(resource.getOwnerEmail()),
-    								 value(resource.getDescription()),
-    								 value(resource.getState().toString()),
-    								 value(resource.getTerminationReason()),
-    								 value(resource.getExpectedTerminationTime()),
-    								 value(resource.getActualTerminationTime()),
-					                 value(resource.getNotificationTime()),
-    								 value(resource.getLaunchTime()),
-    								 value(resource.getMarkTime()),
-				  					 value(resource.isOptOutOfJanitor()),
-    								 json);
+    		int updated = InsertOrUpdate(jdbcTemplate,sb,resource,json);
             LOGGER.debug(String.format("%d rows inserted", updated));
     	} else {
     		StringBuilder sb = AppendUpdateStatement();
 
             LOGGER.debug(String.format("Update statement is '%s'", sb));
-    		int updated = this.jdbcTemplate.update(sb.toString(),
-    								 resource.getResourceType().toString(),
-    								 value(resource.getRegion()),
-					                 emailValue(resource.getOwnerEmail()),
-    								 value(resource.getDescription()),
-    								 value(resource.getState().toString()),
-    								 value(resource.getTerminationReason()),
-    								 value(resource.getExpectedTerminationTime()),
-    								 value(resource.getActualTerminationTime()),
-					                 value(resource.getNotificationTime()),
-    								 value(resource.getLaunchTime()),
-    								 value(resource.getMarkTime()),
-					                 value(resource.isOptOutOfJanitor()),
-    								 json,
-    								 resource.getId(),
-						  			 resource.getRegion());
+    		int updated = InsertOrUpdate(jdbcTemplate,sb,resource,json);
             LOGGER.debug(String.format("%d rows updated", updated));
     	}
     	LOGGER.debug("Successfully saved.");
     }
 
+    private int InsertOrUpdate(JdbcTemplate jdbcTemplate,StringBuilder sb,Resource resource,String json){
+    	return jdbcTemplate.update(sb.toString(),
+				 resource.getId(),
+				 value(resource.getResourceType().toString()),
+				 value(resource.getRegion()),
+				 emailValue(resource.getOwnerEmail()),
+				 value(resource.getDescription()),
+				 value(resource.getState().toString()),
+				 value(resource.getTerminationReason()),
+				 value(resource.getExpectedTerminationTime()),
+				 value(resource.getActualTerminationTime()),
+                value(resource.getNotificationTime()),
+				 value(resource.getLaunchTime()),
+				 value(resource.getMarkTime()),
+					 value(resource.isOptOutOfJanitor()),
+				 json);
+    }
 	private StringBuilder AppendUpdateStatement() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("update ").append(table).append(" set ");
